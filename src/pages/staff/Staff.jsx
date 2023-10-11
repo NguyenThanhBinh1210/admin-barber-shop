@@ -16,6 +16,7 @@ import { AuthContext } from "../../context/AuthContext";
 export default function Staff() {
   const { user } = useContext(AuthContext);
   const [dataStaff, setDataStaff] = useState([]);
+  console.log(dataStaff);
   const [rowId, setRowId] = useState("");
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState("");
@@ -241,6 +242,11 @@ export default function Staff() {
         type: "actions",
         renderCell: (params) => <View {...{ params, rowId, setRowId }} />,
         editable: true,
+      },
+      {
+        field: "store",
+        headerName: "store",
+        width: 90,
       },
     ],
     [rowId]

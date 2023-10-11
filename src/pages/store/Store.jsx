@@ -61,7 +61,7 @@ export default function Store() {
           <div className="item-store">
             <span className="title-store">Telephone:</span>
             <span className="name-store">
-              {item ? item.Telephoe : data.Telephone ?? ""}
+              {item ? item.Telephone : data.Telephone ?? ""}
             </span>
           </div>
           <div className="item-store">
@@ -106,6 +106,7 @@ export default function Store() {
 
   const Update = ({ item }) => {
     const [inputField, setInputField] = useState({
+      id: item._id || data._id,
       Name_Store: item.Name_Store || data.Name_Store,
       Telephone: item.Telephone || data.Telephone,
       Description: item.Description || data.Description,
@@ -122,23 +123,22 @@ export default function Store() {
     const submitHandle = async (e) => {
       e.preventDefault();
       const data = {
-        Name_Store: inputField.Name,
-        Telephone: inputField.Email,
-        Description: inputField.Email,
+        id: inputField.id,
+        Name_Store: inputField.Name_Store,
+        Telephone: inputField.Telephone,
+        Description: inputField.Description,
         Number: inputField.Number,
         Street: inputField.Street,
         District: inputField.District,
         City: inputField.City,
       };
-
       try {
         const res = await axios.put(
           "http://localhost:8800/api/store/update",
-          item || data
+          data
         );
-        console.log(res.datares.data);
-        // toast.success(res.data.message);
-        // setData(res.data.value);
+        toast.success(res.data.message);
+        setData(res.data.value);
       } catch (error) {
         toast.error("Update information failed");
       }

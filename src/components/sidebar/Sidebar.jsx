@@ -97,12 +97,12 @@ export default function Sidebar() {
             <div className="item-sidebar">Revenue</div>
           </div>
         </NavLink>
-        <NavLink to="/banner" className="Link">
+        {/* <NavLink to="/banner" className="Link">
           <div className="items-sidebar">
             <BsImages className="icon" />
             <div className="item-sidebar">Banner</div>
           </div>
-        </NavLink>
+        </NavLink> */}
       </div>
     </div>
   );
