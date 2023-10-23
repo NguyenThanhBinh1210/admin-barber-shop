@@ -462,7 +462,7 @@ export default function Services() {
             />
           </div>
         </div>
-        {user.isAdmin && (
+        {!user.isAdmin && (
           <div className="create-service-container">
             <div className="left-service"></div>
             <div className="right-service">

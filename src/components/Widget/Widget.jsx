@@ -173,7 +173,7 @@ export default function Widget() {
       <Items
         title="Appointment"
         link={
-          <Link to="/booking" className="link">
+          <Link to={!currentUser?.isAdmin && "/booking"} className="link">
             <span> Go to Schedule</span>
           </Link>
         }

@@ -17,11 +17,30 @@ import {
   MdAttachMoney,
 } from "react-icons/md";
 import { BiCategoryAlt } from "react-icons/bi";
+import axios from "axios";
 
 export default function Sidebar() {
   const { user: currentUser } = useContext(AuthContext);
   const [user, setUser] = useState(currentUser);
+  const [dataDayCurrent, setDataDayCurrent] = useState([]);
+  const count = dataDayCurrent.filter(
+    (item) => item.Status === "pending"
+  ).length;
 
+  useEffect(() => {
+    //fetch data of current date
+    const fetchDayCurrent = async () => {
+      const data = {
+        storeId: currentUser.store,
+      };
+      const res = await axios.post(
+        "http://localhost:8800/api/appointment/get-booking-by-store",
+        data
+      );
+      setDataDayCurrent(res.data);
+    };
+    fetchDayCurrent();
+  }, []);
   return (
     <div className="Sidebar">
       <div className="top-sidebar">
@@ -62,7 +81,7 @@ export default function Sidebar() {
             <div className="items-sidebar">
               <BsJournalBookmarkFill className="icon" />
               <div className="item-sidebar booking-wwrap">
-                Booking <div className="booking-count">0</div>
+                Booking <div className="booking-count">{count}</div>
               </div>
             </div>
           </NavLink>
@@ -73,12 +92,14 @@ export default function Sidebar() {
             <div className="item-sidebar">Category</div>
           </div>
         </NavLink>
-        <NavLink to={`/service`} className="Link">
-          <div className="items-sidebar">
-            <BiCategoryAlt className="icon" />
-            <div className="item-sidebar">Services</div>
-          </div>
-        </NavLink>
+        {!user?.isAdmin && (
+          <NavLink to={`/service`} className="Link">
+            <div className="items-sidebar">
+              <BiCategoryAlt className="icon" />
+              <div className="item-sidebar">Services</div>
+            </div>
+          </NavLink>
+        )}
         <NavLink to={`/post`} className="Link">
           <div className="items-sidebar">
             <MdOutlinePostAdd className="icon" />

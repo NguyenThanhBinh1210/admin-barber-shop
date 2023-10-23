@@ -36,7 +36,7 @@ export default function App() {
         <Route exact path="/home" element={user ? <Home /> : <Login />} />
         <Route
           path="/"
-          element={user ? <Navigate replace to="/home" /> : <Home />}
+          element={user ? <Navigate replace to="/home" /> : <Login />}
         />
         <Route path="/booking" element={user ? <Booking /> : <Login />} />
         <Route

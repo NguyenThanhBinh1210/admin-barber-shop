@@ -88,7 +88,7 @@ export default function Staff() {
 
   const Delete = ({ params }) => {
     const handleDelete = async () => {
-      const data = params.row._id;
+      const data = params.row?._id;
       const response = await axios.delete(
         "http://localhost:8800/api/staff/delete/" + data
       );
@@ -120,7 +120,7 @@ export default function Staff() {
   const Save = ({ params, rowId, setRowId }) => {
     const handleSubmit = async () => {
       const data = {
-        StaffId: params.row._id,
+        StaffId: params.row?._id,
         Name: params.row.Name,
         Telephone: params.row.Telephone,
         Gender: params.row.Gender,
@@ -157,7 +157,7 @@ export default function Staff() {
     const submitHandle = async (e) => {
       e.preventDefault();
       setOpen(true);
-      await setRowId(params.row._id);
+      await setRowId(params.row?._id);
     };
     // add link to page information customer
     return (
@@ -244,9 +244,9 @@ export default function Staff() {
         editable: true,
       },
       {
-        field: "store",
-        headerName: "store",
-        width: 90,
+        field: "nameStore",
+        headerName: "Store",
+        width: 100,
       },
     ],
     [rowId]
@@ -331,13 +331,15 @@ export default function Staff() {
           return url;
         })
       );
-
       const staff = {
         Name: inputField.Name,
         Telephone: inputField.Telephone,
         Image: list,
         Gender: inputField.Gender,
         Email: inputField.Email,
+        Password: "123456",
+        storeId: user.store,
+        storeManager: "staff",
       };
       const response = await axios.post(
         "http://localhost:8800/api/staff/add",
