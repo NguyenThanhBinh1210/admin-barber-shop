@@ -86,12 +86,14 @@ export default function Sidebar() {
             </div>
           </NavLink>
         )}
-        <NavLink to={`/category`} className="Link">
-          <div className="items-sidebar">
-            <BiCategoryAlt className="icon" />
-            <div className="item-sidebar">Category</div>
-          </div>
-        </NavLink>
+        {user?.isAdmin && (
+          <NavLink to={`/category`} className="Link">
+            <div className="items-sidebar">
+              <BiCategoryAlt className="icon" />
+              <div className="item-sidebar">Category</div>
+            </div>
+          </NavLink>
+        )}
         {!user?.isAdmin && (
           <NavLink to={`/service`} className="Link">
             <div className="items-sidebar">
@@ -106,24 +108,13 @@ export default function Sidebar() {
             <div className="item-sidebar">Posts</div>
           </div>
         </NavLink>
-        {/* <NavLink to="/receipt" className="Link">
-          <div className="items-sidebar">
-            <BsReceipt className="icon" />
-            <div className="item-sidebar">Receipts</div>
-          </div>
-        </NavLink> */}
+
         <NavLink to="/revenue" className="Link">
           <div className="items-sidebar">
             <MdAttachMoney className="icon" />
             <div className="item-sidebar">Revenue</div>
           </div>
         </NavLink>
-        {/* <NavLink to="/banner" className="Link">
-          <div className="items-sidebar">
-            <BsImages className="icon" />
-            <div className="item-sidebar">Banner</div>
-          </div>
-        </NavLink> */}
       </div>
     </div>
   );

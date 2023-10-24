@@ -14,25 +14,30 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function Services() {
   const { user } = useContext(AuthContext);
-
   const [dataService, setDataService] = useState([]);
   const [rowId, setRowId] = useState("");
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState("");
   const [category, setCategory] = useState([]);
-
   //effect data staff
   useEffect(() => {
-    const fetchService = async () => {
-      try {
-        const res = await axios.get("http://localhost:8800/api/service/all");
-        setDataService(res.data.value);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchService();
-  }, []);
+    if (user.store) {
+      const fetchService = async () => {
+        try {
+          const res = await axios.post(
+            "http://localhost:8800/api/service/get-all",
+            {
+              storeId: user?.store,
+            }
+          );
+          setDataService(res.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchService();
+    }
+  }, [user.store]);
 
   // fetch title category
   useEffect(() => {
@@ -136,19 +141,21 @@ export default function Services() {
 
   const Delete = ({ params }) => {
     const handleDelete = async () => {
-      const id = params.row._id;
-      // const data = params.row.Category;
-      const response = await axios.delete(
-        "http://localhost:8800/api/service/delete/" + id
-      );
-      const fetchData = await axios.get(
-        "http://localhost:8800/api/service/all"
-      );
-      const record = response.data;
-      if (record.status === 200) {
+      try {
+        const id = params.row._id;
+        // const data = params.row.Category;
+        const response = await axios.delete(
+          "http://localhost:8800/api/service/delete/" + id
+        );
+        const res = await axios.post(
+          "http://localhost:8800/api/service/get-all",
+          {
+            storeId: user?.store,
+          }
+        );
+        setDataService(res.data);
         toast.success("Delete information successfully");
-        setDataService(fetchData.data.value);
-      } else {
+      } catch (error) {
         toast.error("Delete information failed");
       }
     };
@@ -357,71 +364,68 @@ export default function Services() {
         type: "actions",
         renderCell: (params) => <Save {...{ params, rowId, setRowId }} />,
       },
+      {
+        field: "delete",
+        width: 80,
+        headerName: "Delete",
+        type: "actions",
+        renderCell: (params) => <Delete {...{ params, rowId, setRowId }} />,
+      },
+      {
+        field: "view",
+        width: 80,
+        headerName: "View",
+        type: "actions",
+        renderCell: (params) => <View {...{ params, rowId, setRowId }} />,
+      },
     ];
-
-    // Nếu người dùng là admin, thêm cột "Delete" và "View"
-    if (user?.isAdmin) {
-      baseColumns.push(
-        {
-          field: "delete",
-          width: 80,
-          headerName: "Delete",
-          type: "actions",
-          renderCell: (params) => <Delete {...{ params, rowId, setRowId }} />,
-        },
-        {
-          field: "view",
-          width: 80,
-          headerName: "View",
-          type: "actions",
-          renderCell: (params) => <View {...{ params, rowId, setRowId }} />,
-        }
-      );
-    }
-
     return baseColumns;
-  }, [user?.isAdmin, rowId]);
+  }, [rowId]);
 
   const CreateNewService = async (e) => {
+    console.log(user.store);
     e.preventDefault();
 
     if (validateForm()) {
-      const list = await Promise.all(
-        Object.values(files).map(async (file) => {
-          const data = new FormData();
-          data.append("file", file);
-          data.append("upload_preset", "social0722");
-          const uploadRes = await axios.post(
-            "https://api.cloudinary.com/v1_1/johnle/image/upload",
-            data
-          );
-          const { url } = uploadRes.data;
-          return url;
-        })
-      );
-      const service = {
-        Name_Service: inputField.Name_Service,
-        Price: inputField.Price,
-        Image: list,
-        Description: inputField.Description,
-        Category: inputField.Category,
-      };
-      try {
-        const response = await axios.post(
-          "http://localhost:8800/api/service/add",
-          service
+      if (user.store) {
+        const list = await Promise.all(
+          Object.values(files).map(async (file) => {
+            const data = new FormData();
+            data.append("file", file);
+            data.append("upload_preset", "social0722");
+            const uploadRes = await axios.post(
+              "https://api.cloudinary.com/v1_1/johnle/image/upload",
+              data
+            );
+            const { url } = uploadRes.data;
+            return url;
+          })
         );
-        const record = response.data;
-        const newData = record.value;
-        setDataService([...dataService, newData]);
-        Clear();
-        if (record.status === 200) {
-          toast.success(record.message);
-        } else {
-          toast.error(record.message);
+        const service = {
+          Name_Service: inputField.Name_Service,
+          Price: inputField.Price,
+          Image: list,
+          Description: inputField.Description,
+          Category: inputField.Category,
+          idStore: user?.store,
+        };
+        try {
+          const response = await axios.post(
+            "http://localhost:8800/api/service/add",
+            service
+          );
+          const record = response.data;
+          const newData = record.value;
+          setDataService([...dataService, newData]);
+          Clear();
+          if (record.status === 200) {
+            toast.success(record.message);
+          } else {
+            toast.error(record.message);
+          }
+        } catch (err) {
+          toast.error("Create is Failed");
         }
-      } catch (err) {
-        toast.error("Create is Failed");
       }
     }
   };

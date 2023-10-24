@@ -81,15 +81,31 @@ export default function Widget() {
     };
     getRevenue();
 
-    const getAppointment = async () => {
-      const res = await axios.post(
-        "http://localhost:8800/api/appointment/Choose",
-        data
-      );
-      const value = res.data;
-      setBooking(value);
-    };
-    getAppointment();
+    // const getAppointment = async () => {
+    //   const res = await axios.post(
+    //     "http://localhost:8800/api/appointment/Choose",
+    //     data
+    //   );
+    //   const value = res.data;
+    //   setBooking(value);
+    // };
+    // getAppointment();
+    if (currentUser?.isAdmin) {
+      setBooking(0);
+    } else {
+      const fetchDayCurrent = async () => {
+        const data = {
+          storeId: currentUser.store,
+        };
+        const res = await axios.post(
+          "http://localhost:8800/api/appointment/get-booking-by-store",
+          data
+        );
+        const count = res.data.filter((item) => item.Status === "pending");
+        setBooking(count.length);
+      };
+      fetchDayCurrent();
+    }
   }, []);
 
   const Items = ({ title, isMoney, link, icon, amount }) => {

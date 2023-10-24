@@ -23,7 +23,7 @@ export default function Booking() {
   const [bill, setBill] = useState();
 
   const [dataDayCurrent, setDataDayCurrent] = useState([]);
-
+  console.log(dataDayCurrent);
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -165,7 +165,7 @@ export default function Booking() {
         editable: true,
       },
       {
-        field: "Services",
+        field: "Name_Service",
         headerName: "Services",
         width: 130,
         editable: true,

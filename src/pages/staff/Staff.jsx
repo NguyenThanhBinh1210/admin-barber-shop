@@ -88,17 +88,18 @@ export default function Staff() {
 
   const Delete = ({ params }) => {
     const handleDelete = async () => {
-      const data = params.row?._id;
-      const response = await axios.delete(
-        "http://localhost:8800/api/staff/delete/" + data
-      );
-      const fetchData = await axios.get("http://localhost:8800/api/staff/all");
-
-      const record = response.data;
-      if (record.status === 200) {
+      try {
+        const data = params.row?._id;
+        console.log(data);
+        const response = await axios.delete(
+          `http://localhost:8800/api/staff/delete/${data}`
+        );
+        const res = await axios.post("http://localhost:8800/api/staff/staff", {
+          staffId: user.store,
+        });
+        setDataStaff(res.data);
         toast.success("Delete information successfully");
-        setDataStaff(fetchData.data.value);
-      } else {
+      } catch (error) {
         toast.error("Delete information failed");
       }
     };
@@ -170,8 +171,9 @@ export default function Staff() {
   };
 
   // state columns of table
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const commonColumns = [
+      // Các cột chung ở đây
       {
         field: "Image",
         headerName: "Avatar",
@@ -212,7 +214,6 @@ export default function Staff() {
         type: "boolean",
         editable: true,
       },
-
       {
         field: "isAdmin",
         headerName: "Admin",
@@ -243,14 +244,19 @@ export default function Staff() {
         renderCell: (params) => <View {...{ params, rowId, setRowId }} />,
         editable: true,
       },
-      {
+    ];
+
+    // Nếu là admin, bao gồm cột "nameStore"
+    if (user?.isAdmin) {
+      commonColumns.push({
         field: "nameStore",
         headerName: "Store",
         width: 100,
-      },
-    ],
-    [rowId]
-  );
+      });
+    }
+
+    return commonColumns;
+  }, [rowId, user.isAdmin]);
   // check error
 
   const [errField, setErrField] = useState({
