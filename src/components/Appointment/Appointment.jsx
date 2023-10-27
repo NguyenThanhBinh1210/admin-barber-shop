@@ -324,7 +324,7 @@ export default function Appointment() {
                     {openStore ? (
                       <div className="show-service-booking">
                         <div
-                          style={{ gridTemplateColumns: "auto auto" }}
+                          style={{ gridTemplateColumns: "1fr 1fr" }}
                           className="grid-service"
                         >
                           {store.map((store, i) => (
@@ -384,7 +384,7 @@ export default function Appointment() {
                       {openService ? (
                         <div className="show-service-booking">
                           <div
-                            style={{ gridTemplateColumns: "auto auto" }}
+                            style={{ gridTemplateColumns: "1fr 1fr" }}
                             className="grid-service"
                           >
                             {service.map((services, i) => (
