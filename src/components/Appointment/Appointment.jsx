@@ -17,13 +17,17 @@ import { BsSearch, BsPersonPlus, BsTelephonePlus } from "react-icons/bs";
 import { HiOutlineMail } from "react-icons/hi";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import ModalBooking from "../ModalBooking/ModalBooking";
 
 export default function Appointment() {
   const { user: currentUser } = useContext(AuthContext);
   const [showForm, setShowForm] = useState(false);
   const [openStore, setOpenStore] = useState(false);
   const [store, setStore] = useState([]);
-
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [booking, setBooking] = useState();
+  const [staffName, setStaffName] = useState("");
+  const [slotText, setSlotText] = useState("");
   const [staff, setStaff] = useState([]);
   const [service, setService] = useState([]);
   const [slotArray, setSlotArray] = useState([]);
@@ -93,10 +97,12 @@ export default function Appointment() {
   };
 
   const handleStaff = async (e) => {
+    setStaffName(e.target.options[e.target.selectedIndex].text);
     setStep2(true);
     setStaffId(e.target.value);
   };
-  const handleSlot = async (slotid, index) => {
+  const handleSlot = async (e, slotid, index) => {
+    setSlotText(e.target.textContent);
     setSlotId(slotid);
     setStep4(true);
     setCheck(index);
@@ -137,7 +143,7 @@ export default function Appointment() {
       setEmail(email);
       setWordEntered("");
       setFilteredData([]);
-      setCheckData(true);
+      // setCheckData(true);
     };
 
     return (
@@ -204,7 +210,12 @@ export default function Appointment() {
             <span>
               <BsPersonPlus />
             </span>
-            <input type="text" className="input-find" defaultValue={name} />
+            <input
+              type="text"
+              className="input-find"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div className="item-find">
             <span>
@@ -213,15 +224,28 @@ export default function Appointment() {
             <input
               type="text"
               className="input-find"
-              defaultValue={telephone}
+              value={telephone}
+              onChange={(e) => setTelephone(e.target.value)}
             />
           </div>
           <div className="item-find">
             <span>
               <HiOutlineMail />
             </span>
-            <input type="text" className="input-find" defaultValue={email} />
+            <input
+              type="text"
+              className="input-find"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
+          <button
+            style={{ marginBottom: 20 }}
+            onClick={() => setCheckData(true)}
+            className="submit-booking true"
+          >
+            Next step
+          </button>
         </div>
       </div>
     );
@@ -260,19 +284,9 @@ export default function Appointment() {
       Services: idService,
       storeId: storeId,
     };
-    try {
-      const res = await axios.post(
-        "http://localhost:8800/api/appointment/add",
-        data
-      );
-
-      toast.success("Appointment successfully!!");
-      setTimeout(() => {
-        history("/booking");
-      }, 3000);
-    } catch (error) {
-      toast.error("Appointment failed");
-    }
+    console.log(data);
+    setBooking(data);
+    setModalOpen(true);
   };
 
   return (
@@ -500,8 +514,8 @@ export default function Appointment() {
                                   <button
                                     key={index}
                                     className="slot-item"
-                                    onClick={() => {
-                                      handleSlot(slot._id, index);
+                                    onClick={(e) => {
+                                      handleSlot(e, slot._id, index);
                                     }}
                                     style={{
                                       backgroundColor:
@@ -525,7 +539,7 @@ export default function Appointment() {
                             onClick={submitBooking}
                           >
                             {" "}
-                            Complete
+                            Next step
                           </button>
                         </React.Fragment>
                       ) : (
@@ -544,6 +558,15 @@ export default function Appointment() {
           </div>
         </div>
       </div>
+      <ModalBooking
+        data={booking}
+        onClose={() => setModalOpen(false)}
+        isOpen={isModalOpen}
+        nameService={nameService}
+        staffName={staffName}
+        slotText={slotText}
+        date={date}
+      />
     </div>
   );
 }
